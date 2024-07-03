@@ -10,7 +10,7 @@ class NoteController extends Controller
 {
     public function index()
     {
-        $notes = Note::where('user_id', Auth::id())->paginate(10);
+        $notes = Note::where('user_id', Auth::id())->paginate(3);
         return view('notes.index', compact('notes'));
     }
 
@@ -40,29 +40,28 @@ class NoteController extends Controller
 
     public function edit(Note $note)
     {
-        $this->authorize('update', $note); // Authorize user to edit note
+        // Get categories for the authenticated user
         $categories = Category::where('user_id', Auth::id())->get();
         return view('notes.edit', compact('note', 'categories'));
     }
-
+    
     public function update(Request $request, Note $note)
     {
-        $this->authorize('update', $note); // Authorize user to update note
-
+        // Validate the request
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'category_id' => 'nullable|exists:categories,id',
         ]);
-
+    
+        // Update the note
         $note->title = $request->title;
         $note->content = $request->content;
         $note->category_id = $request->category_id;
         $note->save();
-
+    
         return redirect()->route('notes.index')->with('success', 'Note updated successfully.');
     }
-
     public function destroy(Note $note)
     {
         $this->authorize('delete', $note); // Authorize user to delete note

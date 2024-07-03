@@ -1,8 +1,12 @@
 <!-- resources/views/notes/edit.blade.php -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
         <h1>Edit Note</h1>
 
         @if($errors->any())
@@ -37,5 +41,8 @@
             </div>
             <button type="submit" class="btn btn-primary">Update</button>
         </form>
-    </div>
+    </div></div></div>
 @endsection
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>

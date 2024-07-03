@@ -11,33 +11,29 @@ use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
-    protected $redirectTo = '/home'; // Redirect after successful registration
-
-    public function __construct()
-    {
-        $this->middleware('guest');
-    }
-
     public function showRegistrationForm()
     {
         return view('auth.register');
     }
 
-    protected function validator(array $data)
+    public function register(Request $request)
     {
-        return Validator::make($data, [
+        $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', 'min:8'],
+            'role' => ['nullable', 'string', 'in:admin,user'], // Ensure role is either 'admin' or 'user'
         ]);
-    }
 
-    protected function create(array $data)
-    {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+        // Create a new user with the specified role
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role ?: 'user', // Default role is 'user' if not provided
         ]);
+
+        // Flash a success message to the session
+        return redirect('login')->with('success', 'Registration successful!');
     }
 }

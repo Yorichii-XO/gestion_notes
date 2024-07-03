@@ -1,11 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Auth\HomeController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\CategoryController;
+use Illuminate\Support\Facades\Auth;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,9 +19,23 @@ use App\Http\Controllers\CategoryController;
 |
 */
 
-Route::get('/', function () {
+Route::get('/sidebar',function(){
+    return view('sidebar');
+});
+Route::get('/',function(){
     return view('home');
 });
+// Home Route
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+// Login Routes
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+// Register Routes
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
+
 Route::get('/notes', [NoteController::class, 'index'])->name('notes.index');
 Route::get('/notes/create', [NoteController::class, 'create'])->name('notes.create');
 Route::post('/notes', [NoteController::class, 'store'])->name('notes.store');
@@ -34,3 +50,4 @@ Route::post('/categories', [CategoryController::class, 'store'])->name('categori
 Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
 Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
 Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');

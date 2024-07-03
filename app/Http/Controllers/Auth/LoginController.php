@@ -7,13 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 class LoginController extends Controller
 {
-    protected $redirectTo = '/home'; // Redirect after login
-
-    public function __construct()
-    {
-        $this->middleware('guest')->except('logout');
-    }
-
     public function showLoginForm()
     {
         return view('auth.login');
@@ -21,24 +14,32 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|min:8',
-        ]);
+        $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
-            return redirect()->intended($this->redirectTo);
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            session(['user_name' => $user->name]);
+
+            // Authentication passed...
+            if ($user->role == 'admin') {
+                return redirect('home')->with('success', 'Login successful!');
+            } else {
+                return redirect('home')->with('success', 'Login successful!');
+            }
         }
 
-        return redirect()->back()->withInput($request->only('email', 'remember'))->withErrors([
-            'email' => 'These credentials do not match our records.',
-        ]);
+        
+
+        return redirect()->back()->withErrors(['email' => 'These credentials do not match our records.']);
     }
 
     public function logout(Request $request)
     {
         Auth::logout();
+
         $request->session()->invalidate();
-        return redirect('/login');
+        $request->session()->regenerateToken();
+
+        return redirect('/')->with('success', 'Logout successful!');
     }
 }
